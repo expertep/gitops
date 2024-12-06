@@ -1,0 +1,27 @@
+name: Kustomize Build and Push
+
+on:
+  push:
+    branches:
+      - main   # Trigger workflow on pushes to the dev branch
+
+jobs:
+  build-kustomize:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Kustomize
+    - name: Install Kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+        sudo mv kustomize /usr/local/bin
+
+    # Step 3: Build Kustomize manifests
+    - name: Build Kustomize
+      run: |
+        kubectl kustomize ./k8s-config/dev > output.yaml
+        cat output.yaml # Optional: Display the output
